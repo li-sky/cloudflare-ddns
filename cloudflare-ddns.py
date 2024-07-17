@@ -1,4 +1,6 @@
 import requests
+import logging
+import sys
 
 def argp(args):
     import argparse
@@ -21,6 +23,16 @@ def genID():
 def main(args):
     parsed_args = argp(args)
     config = configParse(parsed_args.config)
+    # setup log file
+    # get log level
+    if "logging" in config:
+        if "level" in config["logging"]:
+            logLevel = config["logging"]["level"]
+        else:
+            logLevel = "INFO"
+        logging.basicConfig(filename=config["logging"]["file"], level = logLevel)
+    else:
+        logging.basicConfig()
     headers = {
         'Authorization': 'Bearer {}'.format(config['token']),
         'Content-Type': 'application/json'
@@ -75,9 +87,9 @@ def main(args):
                 response = requests.get("https://api6.ipify.org")
                 content = response.text
         if content == "":
-            print("No content found for record: {} {}".format(localSetting["type"], localSetting["name"]))
+            logging.debug("No IP found for record: {} {}".format(localSetting["type"], localSetting["name"])
             continue
-        
+
         # update record
         recordUpdateSuccess = False
         for DNSRecord in record:
@@ -94,7 +106,7 @@ def main(args):
                     'ttl': DNSRecord['ttl']
                 })
                 response.raise_for_status()
-                print("Updated record: {} {} to {}".format(DNSRecord['type'], DNSRecord['name'], content))
+                logging.debug("Updated record: {} {} to {}".format(localSetting["type"], localSetting["name"], content))
                 break
         if not recordUpdateSuccess:
             # create record
@@ -109,7 +121,7 @@ def main(args):
             })
             print(response.content)
             response.raise_for_status()
-            print("Created record: {} {} to {}".format(localSetting["type"], localSetting["name"], content))
+            logging.debug("Created record: {} {} to {}".format(localSetting["type"], localSetting["name"], content)
     
 
 if __name__ == '__main__':
