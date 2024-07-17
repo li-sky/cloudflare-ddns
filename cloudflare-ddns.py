@@ -87,7 +87,7 @@ def main(args):
                 response = requests.get("https://api6.ipify.org")
                 content = response.text
         if content == "":
-            logging.debug("No IP found for record: {} {}".format(localSetting["type"], localSetting["name"])
+            logging.debug("No IP found for record: {} {}".format(localSetting["type"], localSetting["name"]))
             continue
 
         # update record
@@ -121,7 +121,7 @@ def main(args):
             })
             print(response.content)
             response.raise_for_status()
-            logging.debug("Created record: {} {} to {}".format(localSetting["type"], localSetting["name"], content)
+            logging.debug("Created record: {} {} to {}".format(localSetting["type"], localSetting["name"], content))
     
 
 if __name__ == '__main__':
